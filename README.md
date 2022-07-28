@@ -20,7 +20,7 @@ Copy `.env.example` file to `.env` and setup the needed variables. You can optio
 
 1. Clone the repo
 2. run `npm install`
-3. run `npm build`
+3. run `npm run build`
 4. run `npm install -g .` to install the cli command
 
 # Usage

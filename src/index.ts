@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import moment from 'moment';
+import 'moment-timezone';
 import PromiseFtp from 'promise-ftp';
 import dotenv from 'dotenv';
 dotenv.config({path: `${__dirname}/../.env`});
@@ -10,10 +11,9 @@ const tmpSnapPath = `${baseTmpPath}/tmp.jpg`;
 const tmpClipPath = `${baseTmpPath}/tmp.mp4`;
 const tmpOutPath = `${baseTmpPath}/tmp.out.mp4`;
 
-
-
 async function yo() {
   let start = moment()
+    .tz(process.env.TIMEZONE!)
     .subtract(1, process.env.CRON_MODE=== 'hourly' ? 'hour' : 'day')
     .startOf(process.env.CRON_MODE === 'hourly' ? 'hour': 'day');
 
@@ -37,7 +37,7 @@ async function yo() {
   for (const item of res) {
     if (item.end_time === null || !item.has_clip) continue;
     const r = await fetch(`${process.env.FRIGATE_BASEURL}/api/events/${item.id}/clip.mp4`);
-    const date =  moment.unix(item.start_time);
+    const date =  moment.unix(item.start_time).tz(process.env.TIMEZONE!);
     const path = `${date.format('YYYY/MM/DD')}/${item.camera}/`;
     await ftp.mkdir(path, true);
     const data = await r.buffer();
