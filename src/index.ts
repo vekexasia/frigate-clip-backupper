@@ -1,4 +1,4 @@
-import  fetch from 'node-fetch';
+import fetch from 'node-fetch';
 import moment from 'moment';
 import PromiseFtp from 'promise-ftp';
 import 'dotenv/config';
@@ -11,20 +11,16 @@ const tmpOutPath = `${baseTmpPath}/tmp.out.mp4`;
 
 
 
-const startUnix = moment().set({
-  hour: 10,
-  minute: 0,
-  second:0
-}).unix();
-const endUnix = moment().set({
-  hour: 0,
-  minute: 0,
-  second:0
-}).add('1','day').subtract('1', 'second').unix();
-
 async function yo() {
-  console.log('fetching');
-  const f = await fetch(`http://frigate2.iot:5000/api/events?after=${startUnix}&before=${endUnix}&has_clip=1&include_thumbnails=0`);
+  let start = moment()
+    .subtract(1, process.env.CRON_MODE=== 'hourly' ? 'hour' : 'day')
+    .startOf(process.env.CRON_MODE === 'hourly' ? 'hour': 'day');
+
+  const end = start.clone()
+    .endOf(process.env.CRON_MODE === 'hourly' ? 'hour': 'day');
+
+  console.log('fetching from frigate date-range', start.toString(), 'to', end.toString());
+  const f = await fetch(`http://frigate2.iot:5000/api/events?after=${start.unix()}&before=${end.unix()}&has_clip=1&include_thumbnails=0`);
   const res = await f.json();
   const ftp = new PromiseFtp();
   console.log('connecting ftp');
@@ -52,7 +48,7 @@ async function yo() {
       fs.writeFileSync(tmpSnapPath, snapBuf);
       fs.writeFileSync(tmpClipPath, data);
       const cmd = `ffmpeg -y -i ${tmpClipPath} -i ${tmpSnapPath}  -map 0 -map 1 -c copy -c:v:1 png -disposition:v:1 attached_pic ${tmpOutPath}`;
-      console.log('converting');
+      console.log('converting', item.id, item.camera, date.format('HH_mm'));
       await exec(cmd, {cwd: baseTmpPath})
       await ftp.put(fs.createReadStream(tmpOutPath), `${path}/${date.format('HH_mm')}.mp4`);
       console.log('done');
