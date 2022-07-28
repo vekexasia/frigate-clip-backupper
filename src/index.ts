@@ -49,9 +49,9 @@ async function yo() {
       fs.writeFileSync(tmpSnapPath, snapBuf);
       fs.writeFileSync(tmpClipPath, data);
       const cmd = `ffmpeg -y -i ${tmpClipPath} -i ${tmpSnapPath}  -map 0 -map 1 -c copy -c:v:1 png -disposition:v:1 attached_pic ${tmpOutPath}`;
-      console.log('converting', item.id, item.camera, date.format('HH_mm'));
+      console.log('converting', item.id, item.camera, date.format('HH_mm_ss'));
       await exec(cmd, {cwd: baseTmpPath})
-      await ftp.put(fs.createReadStream(tmpOutPath), `${path}/${date.format('HH_mm')}.mp4`);
+      await ftp.put(fs.createReadStream(tmpOutPath), `${path}/${date.format('HH_mm_ss')}.mp4`);
       console.log('done');
 
       fs.unlinkSync(tmpSnapPath);
