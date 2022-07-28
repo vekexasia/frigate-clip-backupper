@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import moment from 'moment';
 import PromiseFtp from 'promise-ftp';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({path: `${__dirname}/../.env`});
 import { exec } from 'child-process-promise';
 import * as fs from 'fs';
 const baseTmpPath = `${__dirname}/..`;
