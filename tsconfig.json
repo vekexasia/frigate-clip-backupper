@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+
+  },
+  "include": [
+    "src"
+    // here you can include another directories with sources
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
