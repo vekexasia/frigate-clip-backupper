@@ -21,7 +21,7 @@ async function yo() {
     .endOf(process.env.CRON_MODE === 'hourly' ? 'hour': 'day');
 
   console.log('fetching from frigate date-range', start.toString(), 'to', end.toString());
-  const f = await fetch(`http://frigate2.iot:5000/api/events?after=${start.unix()}&before=${end.unix()}&has_clip=1&include_thumbnails=0`);
+  const f = await fetch(`${process.env.FRIGATE_BASEURL}/api/events?after=${start.unix()}&before=${end.unix()}&has_clip=1&include_thumbnails=0`);
   const res = await f.json();
   const ftp = new PromiseFtp();
   console.log('connecting ftp');
